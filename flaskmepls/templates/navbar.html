@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-primary">
+  <div class="container">
+    <img class="main-icon" width="50" height="50" src="{{ url_for('static', filename='images/favicon.ico') }}" alt="Icon">
+    <a class="navbar-brand" href="/">NetHard Music</a>
+    
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item" id="discover">
+          <a class="nav-link" href="{{ url_for('index') }}">探索</a>
+        </li>
+        <li class="nav-item" id="all-songs">
+          <a class="nav-link" href="{{ url_for('music') }}">音樂</a>
+        </li>
+
+        {% if username %}
+        <li class="nav-item dropdown" id="user-page">
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ username }}</a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{{ url_for('user_favs') }}">收藏</a>
+            {% if admin %}
+            <a class="dropdown-item" href="{{ url_for('admin_page') }}">管理頁面</a>
+            {% endif %}
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{{ url_for('logout') }}">登出</a>
+          </div>
+        </li>
+        {% else %}
+        <li class="nav-item" id="playlists">
+          <a class="nav-link" href="{{ url_for('login') }}">登入</a>
+        </li>
+        {% endif %}
+
+      </ul>
+      <form class="form-inline my-2 my-lg-0" action="{{ url_for('search') }}" method="GET">
+        <input class="form-control mr-sm-2" type="text" name="query" placeholder="搜尋音樂">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">搜尋</button>
+      </form>
+    </div>
+  </div>
+</nav>

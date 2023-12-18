@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetHard Music</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/cosmo/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    
+</head>
+
+<body>
+    {% include 'admin_navbar.html' %}
+    <div class="container" id="main-content">
+        <form class="form-inline my-2 my-lg-0" id="search-bar">
+            <button type="button" class="btn btn-primary mr-sm-2" data-toggle="modal" data-target="#myModal">添加用戶</button>
+        </form>
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div id="flashMessages">
+          {% for message in messages %}
+          <div class="alert alert-dismissible alert-primary">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <!-- Table for displaying users -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>用戶名</th>
+                    <th>郵箱</th>
+                    <th>管理員</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop over users and create a row for each user -->
+                {% for user in userlist %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.admin }}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ user._id }}">刪除</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <!-- Modal content goes here -->
+            <div class="modal-header">
+              <h5 class="modal-title">添加用戶</h5>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+              <form method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <div class="content">
+                        <div class="form-group">
+                            <label for="usrInput">用戶名</label>
+                            <input type="text" class="form-control" id="usrInput" aria-describedby="usrHelp" placeholder="輸入用戶名" name="username" required>
+                            <small id="usrHelp" class="form-text text-muted">我們允許重名，別擔心。</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="pwdInput">密碼</label>
+                            <input type="password" class="form-control" id="pwdInput" aria-describedby="pwdHelp" placeholder="輸入密碼" name="password" required>
+                            <small id="pwdHelp" class="form-text text-muted">你最好整個強點的。</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="emailInput">郵箱</label>
+                            <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp" placeholder="輸入郵箱" name="email" required>
+                            <small id="emailHelp" class="form-text text-muted">我們永遠不會向第三方透露您的電郵地址，除非哪天被迫——</small>
+                        </div>
+                        <div class="form-group">
+                          <label for="userType">用戶類別</label>
+                          <select class="form-control" id="userType" name="usrType">
+                            <option>User</option>
+                            <option>Admin</option>
+                          </select>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary">添加</button>
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    {% for user in userlist %}
+    <div class="modal fade" id="deleteModal{{ user._id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ user._id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel{{ user._id }}">刪除確認</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>確認要刪除{{ user.username }}?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="post" action="{{ url_for('delete_user', user_id=user._id) }}">
+                        <button type="submit" class="btn btn-danger">對，刪除吧</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">讓我再想想</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+    
+</body>
+
+</html>

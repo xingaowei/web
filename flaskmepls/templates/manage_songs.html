@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetHard Music</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/cosmo/bootstrap.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+
+</head>
+
+<body>
+    {% include 'admin_navbar.html' %}
+    
+    <div class="container" id="main-content">
+        <form class="form-inline my-2 my-lg-0" id="search-bar">
+            <button type="button" class="btn btn-primary mr-sm-2" data-toggle="modal" data-target="#myModal">上傳歌曲</button>
+        </form>
+
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div id="flashMessages" class="alert alert-dismissible alert-primary" role="alert">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {% for message in messages %}
+            <label>{{ message }}</label>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Table for displaying songs -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>封面</th>
+                    <th>歌名</th>
+                    <th>歌手</th>
+                    <th>專輯</th>
+                    <th>路徑</th>
+                    <th>長度</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop over songs and create a row for each song -->
+                {% for song in songs %}
+                <tr>
+                    <td><img src="{{ song.cover }}" alt="{{ song.title }} Cover" height="50"></td>
+                    <td>{{ song.title }}</td>
+                    <td>{{ song.artists }}</td>
+                    <td>{{ song.album }}</td>
+                    <td>{{ song.path }}</td>
+                    <td>{{ song.length }}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ song._id }}">刪除</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal content goes here -->
+                <div class="modal-header">
+                    <h5 class="modal-title">上傳歌曲</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>最大10MB, 接受mp3格式</label>
+                            <input type="file" class="form-control-file" id="fileUpload" name="file" required>
+                        </div>
+                        <button class="btn btn-primary" type="submit">上傳</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    {% for song in songs %}
+    <div class="modal fade" id="deleteModal{{ song._id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ song._id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel{{ song._id }}">刪除確認</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>確認要刪除{{ song.title }}?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="post" action="{{ url_for('delete_song', song_id=song._id) }}">
+                        <button type="submit" class="btn btn-danger">對，刪除吧</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">讓我再想想</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
+</body>
+
+
+</html>

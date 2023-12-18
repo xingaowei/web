@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetHard Music</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/cosmo/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sub.css') }}">
+    
+    <!-- APlayer -->
+    <link rel="stylesheet" href="static/css/APlayer.min.css">
+    <script src="static/js/APlayer.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container" id="main-content">
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div id="flashMessages" class="alert alert-dismissible alert-primary" role="alert">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {% for message in messages %}
+            <label>{{ message }}</label>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <form class="form-inline my-2 my-lg-0" id="search-bar">
+            <button type="button" class="btn btn-primary mr-sm-2" onclick="playAll()">播放所有</button>
+        </form>
+        
+        <!-- Table for displaying songs -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>封面</th>
+                    <th>歌名</th>
+                    <th>歌手</th>
+                    <th>專輯</th>
+                    <th>長度</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop over songs and create a row for each song -->
+                {% for song in songs %}
+                <tr>
+                    <td><img src="{{ song.cover }}" alt="{{ song.title }} Cover" height="100"></td>
+                    <td>{{ song.title }}</td>
+                    <td>{{ song.artists }}</td>
+                    <td>{{ song.album }}</td>
+                    <td>{{ song.length }}</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                            <button type="button" class="btn btn-primary btn-sm" data-index="{{ loop.index0 }}" onclick="playSong(this)">播放</button>
+                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ song._id }}">刪除</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        {% for song in songs %}
+        <div class="modal fade" id="deleteModal{{ song._id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ song._id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel{{ song._id }}">刪除確認</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>確認要刪除{{ song.title }}?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post" action="{{ url_for('remove_from_favorites', song_id=song._id) }}">
+                            <button type="submit" class="btn btn-danger">對，刪除吧</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">讓我再想想</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    </div>
+    <footer>
+    <div class="container aplayer-wrap">
+        <div id="aplayer"></div>
+    </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Initialize APlayer without a playlist
+            const songs = {{ songs | tojson | safe }};
+            const ap = new APlayer({
+                container: document.getElementById('aplayer'),
+                listFolded: false,
+                listMaxHeight: 5,
+                theme: '#2780e3',
+                preload: 'auto',
+                audio: [] // Start with an empty playlist
+            });
+            
+            // Function to handle play button click
+            window.playSong = function(buttonElement) {
+                // Retrieve song index from button's data-index attribute
+                const index = buttonElement.getAttribute('data-index');
+                
+                // Assuming `songs` is available and contains the song data
+                const song = songs[index];
+                
+                song_selection = [{
+                    name: song.title,
+                    artist: song.artists,
+                    url: song.path,
+                    cover: song.cover
+                }]
+                
+                ap.list.add(song_selection);
+                // ap.play does not take any arg
+                ap.list.switch(ap.list.audios.length - 1); // play the last one in the playlist
+                ap.play(); // empty playlist does not affect anything btw
+                ap.list.show() // pop up cos it looks cool
+            };
+
+            // Function to play all
+            window.playAll = function(index) {
+                ap.list.clear(); // Clear the current playlist, add the new song, and play it
+                // Populate the APlayer playlist
+                songs.forEach((song, index) => {
+                    ap.list.add([{
+                        name: song.title,
+                        artist: song.artists,
+                        url: song.path,
+                        cover: song.cover
+                    }]);
+                });
+                ap.list.switch(index); // Switch to the song at the specified index
+                ap.play(); // Play the song
+                ap.list.show() // pop up cos it looks cool
+            };
+
+        });
+    </script>
+    
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+.main-icon {
+    float: left; /* Float the image to the left */
+    margin-right: 10px; /* Add some margin to create spacing between the image and the heading */
+}
+#search-bar {
+    padding: 10px;
+}
+#bigboi {
+    margin-top: 50px;
+}
+.alert {
+    text-align: center;
+}

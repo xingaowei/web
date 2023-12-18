@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ song.title }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/cosmo/bootstrap.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    
+</head>
+
+<body>
+    <div class="container mt-2">
+        <a class="btn btn-primary" id="return-to" href="javascript:history.back()">Return</a>
+        <!-- Song Detail Section -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="media">
+                    <img src="../{{ song.cover }}" class="mr-3" alt="Album Cover" style="width: 256px;">
+                    <div class="media-body">
+                        <h3 class="mt-0">{{ song.title }}</h5>
+                        <p>歌手: {{ song.artists }}</p>
+                        <p>專輯: {{ song.album }}</p>
+                        <a class="btn btn-primary" data-index="{{ song.index0 }}" onclick="playSong(this)">Play</a>
+                        <a class="btn btn-secondary" onclick="addSong(this)">Add to favouite</a>
+                        <a class="btn btn-info" onclick="shareSong(this)">Share</a>
+                    </div>
+                </div>
+
+                <!-- Comment Section -->
+                <div class="comments mt-4">
+                    <h6>評論</h6>
+                    <div class="comment-box">
+                        <!-- Comment form -->
+                        <form>
+                            <textarea class="form-control" rows="3"></textarea>
+                            <button type="submit" class="btn btn-primary mt-2">評論</button>
+                        </form>
+                    </div>
+                    <!-- Comment list -->
+                    <div class="comment-list mt-3">
+                        <!-- Dynamically list comments here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Songs Sidebar -->
+            <div class="col-md-4">
+                <h6>相關歌曲</h6>
+                <ul class="list-unstyled">
+                    <!-- Dynamically list recommended songs here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include your scripts here (Bootstrap JS, custom JS, etc.) -->
+</body>
+
+</html>

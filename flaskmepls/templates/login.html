@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/cosmo/bootstrap.min.css">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  
+  <title>登入</title>
+  
+  <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/sign-in/">
+  
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-align: center;
+      align-items: center;
+      padding-top: 40px;
+      padding-bottom: 40px;
+      background-color: #f5f5f5;
+    }
+
+    .form-signin {
+      width: 100%;
+      max-width: 330px;
+      padding: 15px;
+      margin: auto;
+    }
+
+    .form-signin .form-control {
+      position: relative;
+      box-sizing: border-box;
+      height: auto;
+      padding: 10px;
+      font-size: 16px;
+    }
+    .form-signin .form-control:focus {
+      z-index: 2;
+    }
+    .form-signin input[type="email"] {
+      margin-bottom: -1px;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .form-signin input[type="password"] {
+      margin-bottom: 10px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    /* target all labels within .modal-body */
+    .modal-body {
+        text-align: left;
+    }
+    .alert {
+      text-align: center;
+    }
+  </style>
+
+</head>
+
+<body class="text-center">
+
+  <form class="form-signin" action="/login" method="post">
+
+    <img class="mb-4" src="{{ url_for('static', filename='images/favicon.ico') }}" alt="Icon" width="128" height="128">
+    
+    <h1 class="h3 mb-3 font-weight-normal">請登入</h1>
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div id="flashMessages" class="alert alert-dismissible alert-primary" role="alert">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {% for message in messages %}
+        <label>{{ message }}</label>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    <label for="inputUsername" class="sr-only">用戶名</label>
+    <input type="text" id="username" name="username" class="form-control" placeholder="用戶名" required autofocus>
+    <label for="inputPassword" class="sr-only">密碼</label>
+    <input type="password" id="password" name="password" class="form-control" placeholder="密碼" required>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">登入</button>
+    <br>
+    <a class="mt-5 mb-3 text-muted" href="{{url_for('register')}}">注冊</a>
+
+  </form>
+
+  <!-- jQuery, Popper.js, and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

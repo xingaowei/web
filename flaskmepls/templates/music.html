@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetHard Music</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.6.2/dist/cosmo/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sub.css') }}">
+    
+    <!-- APlayer -->
+    <link rel="stylesheet" href="static/css/APlayer.min.css">
+    <script src="static/js/APlayer.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container" id="main-content">
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div id="flashMessages" class="alert alert-dismissible alert-primary" role="alert">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {% for message in messages %}
+            <label>{{ message }}</label>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <!-- Table for displaying songs -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>封面</th>
+                    <th>歌名</th>
+                    <th>歌手</th>
+                    <th>專輯</th>
+                    <th>長度</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop over songs and create a row for each song -->
+                {% for song in songs %}
+                <tr>
+                    <td><img src="{{ song.cover }}" alt="{{ song.title }} Cover" height="100"></td>
+                    <td>{{ song.title }}</td>
+                    <td>{{ song.artists }}</td>
+                    <td>{{ song.album }}</td>
+                    <td>{{ song.length }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-index="{{ loop.index0 }}" onclick="playSong(this)">播放</button>
+                        <form method="post" action="{{ url_for('add_to_favorites', song_id=song._id) }}">
+                            <button class="btn btn-primary btn-sm" type="submit">收藏</button>
+                        </form>
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+    </div>
+
+    <footer>
+    <div class="container aplayer-wrap">
+        <div id="aplayer"></div>
+    </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Initialize APlayer without a playlist
+            const songs = {{ songs | tojson | safe }};
+            const ap = new APlayer({
+                container: document.getElementById('aplayer'),
+                listFolded: false,
+                listMaxHeight: 5,
+                theme: '#2780e3',
+                preload: 'auto',
+                audio: [] // Start with an empty playlist
+            });
+            
+            // Function to handle play button click
+            window.playSong = function(buttonElement) {
+                // Retrieve song index from button's data-index attribute
+                const index = buttonElement.getAttribute('data-index');
+                
+                // Assuming `songs` is available and contains the song data
+                const song = songs[index];
+                
+                song_selection = [{
+                    name: song.title,
+                    artist: song.artists,
+                    url: song.path,
+                    cover: song.cover
+                }]
+                
+                // ap.list.clear(); // Clear the current playlist, add the new song, and play it
+                ap.list.add(song_selection);
+                // ap.play does not take any arg
+                ap.list.switch(ap.list.audios.length - 1); // play the last one in the playlist
+                ap.play(); // empty playlist does not affect anything btw
+                ap.list.show() // pop up cos it looks cool
+            };
+            // Populate the APlayer playlist
+            // songs.forEach((song, index) => {
+            //     ap.list.add([{
+            //         name: song.title,
+            //         artist: song.artists,
+            //         url: song.path,
+            //         cover: song.cover
+            //     }]);
+            // });
+            // function addToFavorites(songId) {
+            //     // Construct the URL for the fetch request
+            //     var url = "{{ url_for('add_to_favorites', song_id='__SONGID__') }}".replace('__SONGID__', songId);
+
+            //     fetch(url, {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //             // Add CSRF token header if CSRF protection is enabled
+            //         },
+            //         body: JSON.stringify({ song_id: songId })
+            //     })
+            //     .then(response => {
+            //         if (!response.ok) {
+            //             throw new Error('Network response was not ok');
+            //         }
+            //     })
+            //     .catch(error => {
+            //         console.error('Fetch error:', error);
+            //     });
+            // }
+        });
+    </script>
+        
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+</body>
+</html>
